@@ -9,7 +9,7 @@ app.use(cors())
 app.use(express.json())
 
 app.get('/api/hello', (req, res) => {
-    res.json({message: 'Hello RONALD MASLOG! YOUR TODOLIST'})
+    res.json({message: 'Welcome Ronald Maslog... Your Todo Task Today!'})
 })
 
 const PORT = process.env.PORT || 5000
