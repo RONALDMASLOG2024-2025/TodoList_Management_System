@@ -8,6 +8,16 @@ const app = express()
 app.use(cors())
 app.use(express.json())
 
+
+
+//My Database connection USING MongoDB Atlas
+mongoose.connect(process.env.MONGO_URI,{
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+}).then(()=>console.log("Connected to MongoDB Atlas")).catch((err) => console.error('MongoDB connection error:', err))
+
+
+
 app.get('/api/hello', (req, res) => {
     res.json({message: 'Welcome Ronald Maslog... Your Todo Task Today!'})
 })
