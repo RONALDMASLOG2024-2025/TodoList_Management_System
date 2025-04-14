@@ -29,9 +29,20 @@ function App() {
 
   return (
     <>
-      <h1>{message}</h1>
-      <p>HELLO Ron</p>
-      <h4>{dbmessage}</h4>
+      <div className="flex flex-col items-center justify-center w-full h-screen bg-black text-center px-4">
+        <h1 className="text-5xl md:text-7xl font-bold text-amber-100 drop-shadow-lg mb-4">
+          DoodleDo
+        </h1>
+        <p className="text-amber-100 text-xl md:text-2xl mb-6">
+          Todo List Management System
+        </p>
+        <a
+          className="bg-white text-gray-800 font-semibold px-6 py-2 rounded-md shadow hover:bg-gray-200 transition duration-300"
+          href="#"
+        >
+          Get Started
+        </a>
+      </div>
     </>
   );
 }

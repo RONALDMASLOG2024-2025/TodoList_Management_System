@@ -13,7 +13,7 @@ var dbmsg = {};
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => {
-    dbmsg = {database : "Ronald Maslog your database is connectedddss"};
+    dbmsg = {database : "Ronald Maslog your database is connected"};
     console.log("Connected to MongoDB Atlas");
     
   })
