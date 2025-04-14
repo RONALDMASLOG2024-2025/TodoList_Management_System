@@ -7,26 +7,29 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-var dbmsg;
+var dbmsg = {};
 
 //My Database connection USING MongoDB Atlas
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => {
+    dbmsg = {database : "Ronald Maslog your database is connectedddss"};
     console.log("Connected to MongoDB Atlas");
-    dbmsg = "Ronald Maslog your database is connected";
+    
   })
   .catch((err) => {
     console.error("MongoDB connection error:", err);
-    dbmsg = "Database connection lost!";
+    dbmsg = {database : "Database connection lost!"};
   });
 
 app.get("/api/database", (req, res) => {
-  res.json({ database: dbmsg });
+  res.json(dbmsg);
 });
 
+console.log(dbmsg)
+
 app.get("/api/hello", (req, res) => {
-  res.json({ message: "Welcome Ronald Maslog... Your Todo Task Today!" });
+  res.json({ message: "Welcome Ronald Maslog... Your Todo List Task Today!" });
 });
 
 const PORT = process.env.PORT || 5000;
