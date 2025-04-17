@@ -5,6 +5,7 @@ import {
   faRightFromBracket,
   faPlus,
   faTrash,
+  faPenToSquare,
 } from "@fortawesome/free-solid-svg-icons";
 import Task from "./Task";
 import ModalAdd from "./ModalAdd";
@@ -115,8 +116,15 @@ export default function Todo({ user }) {
               type="text"
               defaultValue="TASK 1 MONGO"
               className="font-semibold text-lg bg-transparent outline-none flex-1"
-              onPointerEnter={handleUpdateTask}
             />
+            <button
+              type="button"
+              onClick={handleUpdateTask} // Replace with your actual update function
+              className="flex items-center gap-2 hover:bg-violet-400-300 text-[#141414] px-4 py-2 rounded-lg transition text-violet-100-300 duration-200 font-semibold"
+            >
+              <FontAwesomeIcon icon={faPenToSquare} className="w-4 h-4" />
+         
+            </button>
             <button
               onClick={handleDeleteTask} // Replace with your delete function
               className="text-red-600 hover:text-red-800 transition"
@@ -131,7 +139,6 @@ export default function Todo({ user }) {
             type="datetime-local"
             className="w-full bg-transparent outline-none text-sm"
             defaultValue={new Date().toISOString().slice(0, 16)} // Format: "YYYY-MM-DDTHH:MM"
-            onPointerEnter={handleUpdateTask}
           />
         </div>
 
@@ -139,7 +146,6 @@ export default function Todo({ user }) {
           <textarea
             placeholder="📓 Notes"
             className="w-full h-24 bg-transparent outline-none"
-            onPointerEnter={handleUpdateTask}
           />
         </div>
 
