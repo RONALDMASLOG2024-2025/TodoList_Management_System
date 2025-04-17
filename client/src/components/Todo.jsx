@@ -1,22 +1,72 @@
 import React from "react";
+import { auth, signOut } from "../firebase";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faRightFromBracket,
+  faPlus,
+  faTrash,
+} from "@fortawesome/free-solid-svg-icons";
+import Task from "./Task";
 
-export default function Todo() {
+export default function Todo({ user }) {
+  const handleSignOut = async () => {
+    try {
+      await signOut(auth);
+      window.location.reload();
+    } catch (error) {
+      console.error("Sign out failed:", error);
+    }
+  };
+
+  const handleAddTask = () => {};
+
+  const handleDeleteTask = () => {};
+
   return (
     <div className="flex flex-col md:flex-row h-screen w-screen font-sans">
       {/* Sidebar - Tasks */}
-      <section className="w-full md:w-4/12 bg-[#41444B] p-6 text-white overflow-y-auto">
-        <h2 className="text-2xl font-bold mb-4">My To-dos</h2>
+      <section
+        className="w-full md:w-4/12  bg-black
+       p-6 pt-0 text-white overflow-y-auto"
+      >
+        <div className="header flex items-center justify-between mb-4 pb-2 pt-6 sticky top-0 bg-black z-10">
+          <div>
+            <p className="md:text-xl md:text-sm font-bold text-amber-200">
+              {user.displayName}
+            </p>
+          </div>
+
+          <button
+            onClick={handleSignOut}
+            type="button"
+            className="flex items-center gap-2 px-4 py-2 rounded-md  hover:bg-gray-600 transition-colors duration-200 text-white"
+          >
+            <FontAwesomeIcon
+              icon={faRightFromBracket}
+              className="w-5 h-5 text-white"
+            />
+          </button>
+        </div>
+
+        <h2 className="text-md text-left font-bold mb-4">My To-dos</h2>
 
         {/* Overdue */}
         <div className="mb-6">
-          <h3 className="text-sm font-semibold text-gray-300 mb-2">OVERDUE</h3>
-          <div className="bg-[#52575D] p-4 rounded-lg mb-3">TASK 1 MONGO</div>
-          <div className="bg-[#52575D] p-4 rounded-lg">TASK 2 MONGO</div>
+          <h3 className="text-sm font-semibold text-gray-300 mb-2 text-left">
+            OVERDUE
+          </h3>
+          <Task></Task>
+          <Task></Task>
+          <Task></Task>
+          <Task></Task>
+          <Task></Task>
         </div>
 
         {/* Today */}
         <div className="mb-6">
-          <h3 className="text-sm font-semibold text-gray-300 mb-2">TODAY</h3>
+          <h3 className="text-sm font-semibold text-gray-300 mb-2 text-left">
+            TODAY
+          </h3>
           <div className="bg-[#52575D] p-4 rounded-lg mb-3">TASK 3 MONGO</div>
         </div>
 
@@ -24,13 +74,15 @@ export default function Todo() {
 
         {/* LATER */}
         <div className="mb-6">
-          <h3 className="text-sm font-semibold text-gray-300 mb-2">LATER</h3>
+          <h3 className="text-sm font-semibold text-gray-300 mb-2 text-left">
+            LATER
+          </h3>
           <div className="bg-[#52575D] p-4 rounded-lg mb-3">TASK 5 MONGO</div>
         </div>
 
         {/* COMPLETED */}
         <div className="mb-6">
-          <h3 className="text-sm font-semibold text-gray-300 mb-2">
+          <h3 className="text-sm font-semibold text-gray-300 mb-2 text-left">
             COMPLETED
           </h3>
           <div className="bg-[#52575D] p-4 rounded-lg mb-3">TASK 4 MONGO</div>
@@ -40,22 +92,43 @@ export default function Todo() {
       {/* Task Details */}
       <section className="relative w-full md:w-8/12 bg-[#CABFAB] p-6 text-[#141414]">
         <div className="bg-[#DFD8C8] p-4 rounded-lg mb-4 shadow-md">
-          <h3 className="font-semibold text-lg">TASK 1 MONGO</h3>
+          <div className="flex items-center justify-between gap-2">
+            <input
+              type="text"
+              defaultValue="TASK 1 MONGO"
+              className="font-semibold text-lg bg-transparent outline-none flex-1"
+            />
+            <button
+              onClick={handleDeleteTask} // Replace with your delete function
+              className="text-red-600 hover:text-red-800 transition"
+            >
+              <FontAwesomeIcon icon={faTrash} className="w-5 h-5" />
+            </button>
+          </div>
         </div>
 
-        <div className="bg-[#DFD8C8] p-4 rounded-lg mb-4 shadow-md flex items-center gap-2">
-          <span role="img" aria-label="calendar">
-            📅
-          </span>
-          <span>18 APR, 7:00 AM</span>
+        <div className="bg-[#DFD8C8] p-4 rounded-lg mb-4 shadow-md">
+          <input
+            type="datetime-local"
+            className="w-full bg-transparent outline-none text-sm"
+            defaultValue="2025-04-18T07:00"
+          />
         </div>
 
         <div className="bg-[#DFD8C8] p-4 rounded-lg shadow-md">
-          <span role="img" aria-label="notes">
-            📓
-          </span>{" "}
-          Notes
+          <textarea
+            placeholder="📓 Notes"
+            className="w-full h-24 bg-transparent outline-none"
+          />
         </div>
+
+        <button
+          type="button"
+          onClick={handleAddTask} // Replace with your function
+          className="fixed bottom-6 right-6 z-50 flex items-center justify-center gap-2 w-14 h-14 bg-gray-600 hover:bg-amber-500 text-amber-500 hover:text-white rounded-full shadow-lg transition duration-300"
+        >
+          <FontAwesomeIcon icon={faPlus} className="w-5 h-5" />
+        </button>
       </section>
     </div>
   );

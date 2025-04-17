@@ -47,6 +47,11 @@ function App() {
             >
               Get Started
             </button>
+
+            <div className="absolute bottom-4 text-center text-sm opacity-50">
+              <p className="text-gray-100">Made by Ronald Maslog</p>
+              <p className="text-gray-100">Year 2025</p>
+            </div>
           </>
         ) : (
           <Login />

@@ -8,6 +8,9 @@ function Login() {
 
   const handleGoogleLogin = async () => {
     try {
+      provider.setCustomParameters({
+        prompt: "select_account",
+      });
       const result = await signInWithPopup(auth, provider);
       setUser(result.user);
 
@@ -51,7 +54,7 @@ function Login() {
         <>
           {/* <p className="text-amber-100">Welcome, {user.displayName}!</p> */}
 
-          <Todo></Todo>
+          <Todo user={user}></Todo>
         </>
       )}
     </div>
