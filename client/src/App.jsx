@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import "./App.css";
-import Login from "./assets/components/Login";
+import Login from "./components/Login";
 
 function App() {
   // const [message, setMessage] = useState("");

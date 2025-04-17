@@ -13,24 +13,26 @@ var dbmsg = {};
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => {
-    dbmsg = {database : "Ronald Maslog your database is connected"};
+    dbmsg = { database: "Ronald Maslog your database is connected" };
     console.log("Connected to MongoDB Atlas");
-    
   })
   .catch((err) => {
     console.error("MongoDB connection error:", err);
-    dbmsg = {database : "Database connection lost!"};
+    dbmsg = { database: "Database connection lost!" };
   });
 
 app.get("/api/database", (req, res) => {
   res.json(dbmsg);
 });
 
-console.log(dbmsg)
+console.log(dbmsg);
 
 app.get("/api/hello", (req, res) => {
   res.json({ message: "Welcome Ronald Maslog... Your Todo List Task Today!" });
 });
+
+const userRoutes = require("./routes/userRoutes");
+app.use("/api/users", userRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

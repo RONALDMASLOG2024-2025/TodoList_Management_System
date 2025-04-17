@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { auth, provider, signInWithPopup } from "../../firebase";
+import { auth, provider, signInWithPopup } from "../firebase";
+import axios from "axios";
 
 function Login() {
   const [user, setUser] = useState(null);
@@ -8,6 +9,14 @@ function Login() {
     try {
       const result = await signInWithPopup(auth, provider);
       setUser(result.user);
+
+      await axios.post(`${import.meta.env.VITE_API_URL}/api/users`, {
+        name: result.user.displayName,
+        email: result.user.email,
+        uid: result.user.uid,
+      });
+
+      console.log("HELLO");
       console.log("User:", result.user);
     } catch (error) {
       console.error("Google Sign-In Error", error);
