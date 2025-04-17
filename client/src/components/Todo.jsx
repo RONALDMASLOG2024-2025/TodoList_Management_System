@@ -117,17 +117,18 @@ export default function Todo({ user }) {
               defaultValue="TASK 1 MONGO"
               className="font-semibold text-lg bg-transparent outline-none flex-1"
             />
+
             <button
               type="button"
               onClick={handleUpdateTask} // Replace with your actual update function
-              className="text-violet-600-600 hover:text-violet-600 transition mx-3"
+              className="text-violet-600 hover:text-violet-800 transition-colors duration-200"
             >
-              <FontAwesomeIcon icon={faPenToSquare} className="w-4 h-4" />
-         
+              <FontAwesomeIcon icon={faPenToSquare} className="w-5 h-5" />
             </button>
+
             <button
               onClick={handleDeleteTask} // Replace with your delete function
-              className="text-red-600 hover:text-red-800 transition"
+              className="text-red-600 hover:text-red-800 transition-colors duration-200"
             >
               <FontAwesomeIcon icon={faTrash} className="w-5 h-5" />
             </button>
