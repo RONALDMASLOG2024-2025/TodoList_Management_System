@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { auth, signOut } from "../firebase";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -7,8 +7,17 @@ import {
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import Task from "./Task";
+import ModalAdd from "./ModalAdd";
+import ModalDelete from "./ModalDelete";
+import ModalUpdate from "./ModalUpdate";
 
 export default function Todo({ user }) {
+  const [isAddModalPressed, setAddModalPressed] = useState(false);
+
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
+  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
+
   const handleSignOut = async () => {
     try {
       await signOut(auth);
@@ -18,9 +27,18 @@ export default function Todo({ user }) {
     }
   };
 
-  const handleAddTask = () => {};
+  const handleAddTask = () => {
+    setAddModalPressed(!isAddModalPressed);
+  };
 
-  const handleDeleteTask = () => {};
+  const handleDeleteTask = () => {
+    console.log("Task deleted");
+    setIsDeleteModalOpen(!isDeleteModalOpen);
+  };
+
+  const handleUpdateTask = () => {
+    setIsUpdateModalOpen(!isUpdateModalOpen);
+  };
 
   return (
     <div className="flex flex-col md:flex-row h-screen w-screen font-sans">
@@ -31,7 +49,7 @@ export default function Todo({ user }) {
       >
         <div className="header flex items-center justify-between mb-4 pb-2 pt-6 sticky top-0 bg-black z-10">
           <div>
-            <p className="md:text-xl md:text-sm font-bold text-amber-200">
+            <p className="xl:text-xl md:text-sm font-bold text-amber-200">
               {user.displayName}
             </p>
           </div>
@@ -39,7 +57,7 @@ export default function Todo({ user }) {
           <button
             onClick={handleSignOut}
             type="button"
-            className="flex items-center gap-2 px-4 py-2 rounded-md  hover:bg-gray-600 transition-colors duration-200 text-white"
+            className="flex items-center gap-2 px-4 py-2 rounded-md  hover:bg-gray-600 transition-colors duration-200 text-white active:bg-amber-500"
           >
             <FontAwesomeIcon
               icon={faRightFromBracket}
@@ -97,6 +115,7 @@ export default function Todo({ user }) {
               type="text"
               defaultValue="TASK 1 MONGO"
               className="font-semibold text-lg bg-transparent outline-none flex-1"
+              onPointerEnter={handleUpdateTask}
             />
             <button
               onClick={handleDeleteTask} // Replace with your delete function
@@ -111,7 +130,8 @@ export default function Todo({ user }) {
           <input
             type="datetime-local"
             className="w-full bg-transparent outline-none text-sm"
-            defaultValue="2025-04-18T07:00"
+            defaultValue={new Date().toISOString().slice(0, 16)} // Format: "YYYY-MM-DDTHH:MM"
+            onPointerEnter={handleUpdateTask}
           />
         </div>
 
@@ -119,17 +139,28 @@ export default function Todo({ user }) {
           <textarea
             placeholder="📓 Notes"
             className="w-full h-24 bg-transparent outline-none"
+            onPointerEnter={handleUpdateTask}
           />
         </div>
 
         <button
           type="button"
           onClick={handleAddTask} // Replace with your function
-          className="fixed bottom-6 right-6 z-50 flex items-center justify-center gap-2 w-14 h-14 bg-gray-600 hover:bg-amber-500 text-amber-500 hover:text-white rounded-full shadow-lg transition duration-300"
+          className="fixed bottom-6 right-6 z-50 flex items-center justify-center gap-2 w-14 h-14 active:bg-white bg-gray-600 hover:bg-amber-500 text-amber-500 hover:text-white rounded-full shadow-lg transition duration-300"
         >
           <FontAwesomeIcon icon={faPlus} className="w-5 h-5" />
         </button>
       </section>
+
+      {isAddModalPressed && <ModalAdd handleAddTask={handleAddTask}></ModalAdd>}
+
+      {isDeleteModalOpen && (
+        <ModalDelete handleDeleteTask={handleDeleteTask}></ModalDelete>
+      )}
+
+      {isUpdateModalOpen && (
+        <ModalUpdate handleUpdateTask={handleUpdateTask}></ModalUpdate>
+      )}
     </div>
   );
 }
