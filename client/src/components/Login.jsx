@@ -25,7 +25,7 @@ function Login() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-black text-center px-4 relative">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-black text-center relative">
       {!user ? (
         <>
           <h1 className="text-5xl md:text-7xl font-bold text-amber-100 drop-shadow-lg mb-4">
@@ -49,7 +49,7 @@ function Login() {
         </>
       ) : (
         <>
-          <p className="text-amber-100">Welcome, {user.displayName}!</p>
+          {/* <p className="text-amber-100">Welcome, {user.displayName}!</p> */}
 
           <Todo></Todo>
         </>
