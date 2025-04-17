@@ -120,7 +120,7 @@ export default function Todo({ user }) {
             <button
               type="button"
               onClick={handleUpdateTask} // Replace with your actual update function
-              className="flex items-center gap-2 hover:bg-violet-400-300 text-[#141414] px-4 py-2 rounded-lg transition text-violet-100-300 duration-200 font-semibold"
+              className="text-violet-600-600 hover:text-violet-600 transition mx-3"
             >
               <FontAwesomeIcon icon={faPenToSquare} className="w-4 h-4" />
          
