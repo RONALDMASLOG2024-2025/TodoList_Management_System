@@ -3,6 +3,7 @@ const router = express.Router();
 const User = require("../model/User");
 
 router.post("/", async (req, res) => {
+  console.log("Incoming data:", req.body);
   const { name, email, uid } = req.body;
 
   try {
