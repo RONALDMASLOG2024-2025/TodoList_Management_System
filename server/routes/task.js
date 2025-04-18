@@ -3,13 +3,12 @@ const router = express.Router();
 const Task = require("../model/Task");
 const verifyFirebaseToken = require("../middleware/firebaseAuth");
 
-// CREATE TASK
-router.post("/tasks", verifyFirebaseToken, async (req, res) => {
+router.post("/", verifyFirebaseToken, async (req, res) => {
   const { task, datetime, notes, isCompleted } = req.body;
 
   try {
     const newTask = new Task({
-      userId: req.user.uid,
+      userId: req.user.uid, // Comes from Firebase token
       task,
       datetime,
       notes,
@@ -24,7 +23,6 @@ router.post("/tasks", verifyFirebaseToken, async (req, res) => {
   }
 });
 
-// GET TASKS
 router.get("/tasks/:userId", verifyFirebaseToken, async (req, res) => {
   try {
     const { userId } = req.params;
@@ -40,24 +38,26 @@ router.get("/tasks/:userId", verifyFirebaseToken, async (req, res) => {
   } catch (error) {
     res
       .status(500)
-      .json({ message: "Failed to fetch tasks", error: error.message });
+      .json({ message: "Failed to fetch tasks", error: err.message });
   }
 });
 
-// DELETE TASK
-router.delete("/tasks/:taskId", verifyFirebaseToken, async (req, res) => {
+router.delete("/tasks/:taskid", verifyFirebaseToken, async (req, res) => {
   try {
+    const { userId } = req.params;
+
+    // Optional: make sure token matches the requested userId
+    if (req.user.uid !== userId) {
+      return res
+        .status(403)
+        .json({ message: "Access denied: mismatched user." });
+    }
+
     const { taskId } = req.params;
-
-    const deletedTask = await Task.findOneAndDelete({
-      _id: taskId,
-      userId: req.user.uid,
-    });
-
+    const deletedTask = await Task.findByIdAndDelete(taskId);
     if (!deletedTask) {
       return res.status(404).json({ message: "Task not found" });
     }
-
     res
       .status(200)
       .json({ message: "Task deleted successfully", task: deletedTask });
@@ -68,14 +68,22 @@ router.delete("/tasks/:taskId", verifyFirebaseToken, async (req, res) => {
   }
 });
 
-// UPDATE TASK
 router.put("/tasks/:taskId", verifyFirebaseToken, async (req, res) => {
   try {
+    const { userId } = req.params;
+
+    // Optional: make sure token matches the requested userId
+    if (req.user.uid !== userId) {
+      return res
+        .status(403)
+        .json({ message: "Access denied: mismatched user." });
+    }
+
     const { taskId } = req.params;
     const { task, datetime, notes, isCompleted } = req.body;
 
-    const updatedTask = await Task.findOneAndUpdate(
-      { _id: taskId, userId: req.user.uid },
+    const updatedTask = await Task.findByIdAndUpdate(
+      taskId,
       { task, datetime, notes, isCompleted },
       { new: true }
     );
@@ -90,7 +98,7 @@ router.put("/tasks/:taskId", verifyFirebaseToken, async (req, res) => {
   } catch (error) {
     res
       .status(500)
-      .json({ message: "Failed to update task", error: error.message });
+      .json({ message: " Failed to update task", error: error.message });
   }
 });
 
