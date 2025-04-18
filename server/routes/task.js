@@ -41,7 +41,7 @@ router.get("/tasks/:userId", verifyFirebaseToken, async (req, res) => {
       .json({ message: "Failed to fetch tasks", error: err.message });
   }
 
-  router.detete("/tasks/:taskid", verifyFirebaseToken, async (req, res) => {
+  router.delete("/tasks/:taskid", verifyFirebaseToken, async (req, res) => {
     try {
       const { userId } = req.params;
 
