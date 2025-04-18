@@ -27,6 +27,7 @@ export default function Todo({ user }) {
       getTasks(user.uid);
     }
   }, [user]);
+  
   const getTasks = async (userId) => {
     try {
       if (!user) {

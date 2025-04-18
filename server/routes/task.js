@@ -3,7 +3,7 @@ const router = express.Router();
 const Task = require("../model/Task");
 const verifyFirebaseToken = require("../middleware/firebaseAuth");
 
-router.post("/", verifyFirebaseToken, async (req, res) => {
+router.post("/tasks", verifyFirebaseToken, async (req, res) => {
   const { task, datetime, notes, isCompleted } = req.body;
 
   try {
