@@ -7,7 +7,7 @@ require("dotenv").config();
 
 
   // // Local development fallback
-  const serviceAccount = require("/etc/secrets/doodledo-d7c4e-firebase-adminsdk-fbsvc-9272b64d8e.json");
+  const serviceAccount = require("./etc/secrets/doodledo-d7c4e-firebase-adminsdk-fbsvc-9272b64d8e.json");
 
   // const serviceAccount = require("./doodledo-d7c4e-firebase-adminsdk-fbsvc-9272b64d8e.json");
 
