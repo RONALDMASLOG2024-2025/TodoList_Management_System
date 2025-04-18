@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { auth, signOut } from "../firebase";
+import React, { useEffect, useState } from "react";
+import { auth, signOut, getAuth } from "../firebase";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faRightFromBracket,
@@ -11,6 +11,7 @@ import Task from "./Task";
 import ModalAdd from "./ModalAdd";
 import ModalDelete from "./ModalDelete";
 import ModalUpdate from "./ModalUpdate";
+import axios from "axios";
 
 export default function Todo({ user }) {
   const [isAddModalPressed, setAddModalPressed] = useState(false);
@@ -18,6 +19,42 @@ export default function Todo({ user }) {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
+
+  const [task, setTask] = useState([]);
+
+  useEffect(() => {
+    if (user) {
+      getTasks(user.uid);
+    }
+  }, [user]);
+  const getTasks = async (userId) => {
+    try {
+      if (!user) {
+        throw new Error("User not authenticated");
+      }
+
+      const token = await user.getIdToken();
+
+      const response = await axios.get(
+        `${import.meta.env.VITE_API_URL}/api/tasks/${userId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      console.log("Tasks:", response.data);
+      setTask(response.data);
+      return response.data;
+    } catch (error) {
+      console.error(
+        "Failed to fetch tasks:",
+        error.response?.data || error.message
+      );
+      return [];
+    }
+  };
 
   const handleSignOut = async () => {
     try {
@@ -74,11 +111,10 @@ export default function Todo({ user }) {
           <h3 className="text-sm font-semibold text-gray-300 mb-2 text-left">
             OVERDUE
           </h3>
-          <Task></Task>
-          <Task></Task>
-          <Task></Task>
-          <Task></Task>
-          <Task></Task>
+
+          {task.map((item) => (
+            <Task key={item.id} task={item}></Task>
+          ))}
         </div>
 
         {/* Today */}
@@ -116,6 +152,7 @@ export default function Todo({ user }) {
               type="text"
               defaultValue="TASK 1 MONGO"
               className="font-semibold text-lg bg-transparent outline-none flex-1"
+              disabled
             />
 
             <button
@@ -140,6 +177,7 @@ export default function Todo({ user }) {
             type="datetime-local"
             className="w-full bg-transparent outline-none text-sm"
             defaultValue={new Date().toISOString().slice(0, 16)} // Format: "YYYY-MM-DDTHH:MM"
+            disabled
           />
         </div>
 
@@ -147,6 +185,7 @@ export default function Todo({ user }) {
           <textarea
             placeholder="📓 Notes"
             className="w-full h-24 bg-transparent outline-none"
+            disabled
           />
         </div>
 
@@ -159,14 +198,24 @@ export default function Todo({ user }) {
         </button>
       </section>
 
-      {isAddModalPressed && <ModalAdd handleAddTask={handleAddTask}></ModalAdd>}
+      {isAddModalPressed && (
+        <ModalAdd
+          getTasks={getTasks}
+          handleAddTask={handleAddTask}
+          user={user}
+        ></ModalAdd>
+      )}
 
       {isDeleteModalOpen && (
         <ModalDelete handleDeleteTask={handleDeleteTask}></ModalDelete>
       )}
 
       {isUpdateModalOpen && (
-        <ModalUpdate handleUpdateTask={handleUpdateTask}></ModalUpdate>
+        <ModalUpdate
+          user={user}
+          getTasks={getTasks}
+          handleUpdateTask={handleUpdateTask}
+        ></ModalUpdate>
       )}
     </div>
   );

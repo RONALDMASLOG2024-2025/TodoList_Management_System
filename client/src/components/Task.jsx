@@ -1,6 +1,21 @@
 import React from "react";
 
-export default function Task() {
+export default function Task({ task }) {
+  const formattedDate = new Date(task.datetime).toLocaleString("en-PH", {
+    timeZone: "Asia/Manila",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true, // optional: makes it AM/PM format
+  });
+
+  const taskDate = new Date(task.datetime);
+  const now = new Date();
+
+  // Overdue if task time has passed current time
+  const isOverdue = taskDate < now;
   return (
     <>
       <div className="bg-[#485060] p-4 rounded-xl flex items-center shadow-md hover:bg-[#525a6b] transition-colors duration-200 mb-3">
@@ -18,9 +33,15 @@ export default function Task() {
             htmlFor="task1"
             className="text-amber-200 text-sm font-semibold cursor-pointer"
           >
-            TASK 1 MONGO
+            {task.task}
           </label>
-          <p className="text-xs text-gray-300 mt-1">April 18, 7:00 AM</p>
+          <p
+            className={`text-xs mt-1 ${
+              isOverdue ? "text-red-400" : "text-gray-300"
+            }`}
+          >
+            {formattedDate}
+          </p>
         </div>
       </div>
     </>

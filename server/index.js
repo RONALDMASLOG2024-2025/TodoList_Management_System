@@ -31,8 +31,15 @@ app.get("/api/hello", (req, res) => {
   res.json({ message: "Welcome Ronald Maslog... Your Todo List Task Today!" });
 });
 
+const verifyFirebaseRoute = require("./routes/verify-firebase");
+app.use("/api", verifyFirebaseRoute);
+
 const userRoutes = require("./routes/userRoutes");
 app.use("/api/users", userRoutes);
+
+const taskRoutes = require("./routes/task");
+app.use("/api/tasks", taskRoutes);
+app.use("/api", taskRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

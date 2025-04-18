@@ -1,6 +1,6 @@
 import React from 'react'
 
-export default function ModalUpdate({handleUpdateTask}) {
+export default function ModalUpdate({handleUpdateTask, user, getTasks}) {
   return (
     <div className="modal fixed inset-0 bg-black/70 bg-op backdrop-opacity-100 flex items-center backdrop-blur-xs justify-center z-50">
     <div className="bg-[#CABFAB] w-full max-w-lg rounded-2xl p-6 shadow-2xl space-y-4">

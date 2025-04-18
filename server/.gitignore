@@ -7,6 +7,8 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+doodledo-d7c4e-firebase-adminsdk-fbsvc-9272b64d8e.json
+
 .env
 node_modules
 dist
