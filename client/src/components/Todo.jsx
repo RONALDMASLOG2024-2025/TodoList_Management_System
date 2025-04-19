@@ -177,7 +177,7 @@ export default function Todo({ user }) {
     <div className="flex flex-col md:flex-row h-screen w-screen font-sans">
       {/* Sidebar - Tasks */}
       <section
-        className="w-full md:w-4/12  bg-black
+        className="w-full h-full md:w-4/12  bg-black
        p-6 pt-0 text-white overflow-y-auto"
       >
         <div className="header flex items-center justify-between mb-4 pb-2 pt-6 sticky top-0 bg-black z-10">
@@ -399,13 +399,17 @@ export default function Todo({ user }) {
           )}
         </section>
       ) : (
-        <section className="relative w-full md:w-8/12 bg-[#CABFAB] p-6 text-[#141414] flex justify-center  items-center">
-          <img
-            src="/DoodleDo.png"
-            alt=""
-            className="h-full w-auto rounded-2xl"
-          />
-        </section>
+
+
+
+
+        <section className="relative h-full w-full md:w-8/12 bg-[#CABFAB] p-6 text-[#141414] flex justify-center  items-center sm:bottom-0">
+        <img
+          src="/DoodleDo.png"
+          alt=""
+          className="h-full w-auto rounded-2xl"
+        />
+      </section>
       )}
 
       <button
