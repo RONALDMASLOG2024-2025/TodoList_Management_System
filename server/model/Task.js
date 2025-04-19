@@ -25,6 +25,10 @@ const taskSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    notified: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );
