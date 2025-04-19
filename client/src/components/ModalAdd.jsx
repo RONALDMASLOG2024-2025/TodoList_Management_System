@@ -20,7 +20,7 @@ export default function ModalAdd({ handleAddTask, user, getTasks }) {
       console.log("Firebase ID Token:", idToken);
       // Make the POST request
       const response = await axios.post(
-        "/api/tasks",
+        `${import.meta.env.VITE_API_URL}/api/tasks`,
         {
           task,
           datetime,
