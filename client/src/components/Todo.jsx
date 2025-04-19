@@ -27,7 +27,7 @@ export default function Todo({ user }) {
       getTasks(user.uid);
     }
   }, [user]);
-  
+
   const getTasks = async (userId) => {
     try {
       if (!user) {
@@ -71,12 +71,74 @@ export default function Todo({ user }) {
   };
 
   const handleDeleteTask = () => {
-    console.log("Task deleted");
     setIsDeleteModalOpen(!isDeleteModalOpen);
   };
 
   const handleUpdateTask = () => {
     setIsUpdateModalOpen(!isUpdateModalOpen);
+  };
+
+  const handleToggle = async (taskId) => {
+    // Toggle logic here
+    await updateTaskStatus(taskId);
+  };
+
+  const updateTaskStatus = async (taskId) => {
+    try {
+      const taskToUpdate = task.find((t) => t._id === taskId);
+      const updated = {
+        ...taskToUpdate,
+        isCompleted: !taskToUpdate.isCompleted,
+      };
+
+      const idToken = await user.getIdToken(); // if using Firebase auth
+      await axios.put(
+        `${import.meta.env.VITE_API_URL}/api/tasks/${taskId}`,
+        updated,
+        {
+          headers: {
+            Authorization: `Bearer ${idToken}`,
+          },
+        }
+      );
+
+      await getTasks(user.uid); // refresh task list
+    } catch (error) {
+      console.error("Failed to toggle task:", error);
+    }
+  };
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const [taskDetails, setTaskDetails] = useState(null); // null initially
+
+  const handletaskDetails = (task) => {
+    setTaskDetails(task);
+  };
+
+  const handleConfirmDelete = async (taskId) => {
+    try {
+      const token = await user.getIdToken();
+      console.log("Task deleted" + taskId);
+      await axios.delete(
+        `${import.meta.env.VITE_API_URL}/api/tasks/${taskId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      getTasks(user.uid);
+      console.log("Task deleted" + taskId);
+      setTaskDetails(null);
+      setIsDeleteModalOpen(!isDeleteModalOpen);
+    } catch (error) {
+      console.error(
+        "Error deleting task:",
+        error.response?.data || error.message
+      );
+    }
   };
 
   return (
@@ -107,116 +169,211 @@ export default function Todo({ user }) {
 
         <h2 className="text-md text-left font-bold mb-4">My To-dos</h2>
 
-        {/* Overdue */}
-        <div className="mb-6">
-          <h3 className="text-sm font-semibold text-gray-300 mb-2 text-left">
-            OVERDUE
-          </h3>
+        {
+          // OVERDUE TASKS
+          task.some(
+            (item) =>
+              new Date(item.datetime) < today && item.isCompleted === false
+          ) && (
+            <div className="mb-6">
+              <h3 className="text-sm font-semibold text-gray-300 mb-2 text-left">
+                OVERDUE
+              </h3>
+              {task.map((item) => {
+                const taskDate = new Date(item.datetime);
+                taskDate.setHours(0, 0, 0, 0);
+                if (taskDate < today && item.isCompleted === false) {
+                  return (
+                    <Task
+                      key={item.id}
+                      task={item}
+                      onToggle={handleToggle}
+                      onSelectedTask={handletaskDetails}
+                    />
+                  );
+                }
+                return null;
+              })}
+            </div>
+          )
+        }
 
-          {task.map((item) => (
-            <Task key={item.id} task={item}></Task>
-          ))}
-        </div>
+        {
+          // TODAY TASKS
+          task.some(
+            (item) =>
+              new Date(item.datetime).toDateString() === today.toDateString() &&
+              item.isCompleted === false
+          ) && (
+            <div className="mb-6">
+              <h3 className="text-sm font-semibold text-gray-300 mb-2 text-left">
+                TODAY
+              </h3>
+              {task.map((item) => {
+                const taskDate = new Date(item.datetime);
+                if (
+                  taskDate.toDateString() === today.toDateString() &&
+                  item.isCompleted === false
+                ) {
+                  return (
+                    <Task
+                      key={item.id}
+                      task={item}
+                      onToggle={handleToggle}
+                      onSelectedTask={handletaskDetails}
+                    />
+                  );
+                }
+                return null;
+              })}
+            </div>
+          )
+        }
 
-        {/* Today */}
-        <div className="mb-6">
-          <h3 className="text-sm font-semibold text-gray-300 mb-2 text-left">
-            TODAY
-          </h3>
-          <div className="bg-[#52575D] p-4 rounded-lg mb-3">TASK 3 MONGO</div>
-        </div>
+        {
+          // LATER TASKS
+          task.some(
+            (item) =>
+              new Date(item.datetime) > today && item.isCompleted === false
+          ) && (
+            <div className="mb-6">
+              <h3 className="text-sm font-semibold text-gray-300 mb-2 text-left">
+                LATER
+              </h3>
+              {task.map((item) => {
+                const taskDate = new Date(item.datetime);
+                taskDate.setHours(0, 0, 0, 0);
+                if (taskDate > today && item.isCompleted === false) {
+                  return (
+                    <Task
+                      key={item.id}
+                      task={item}
+                      onToggle={handleToggle}
+                      onSelectedTask={handletaskDetails}
+                    />
+                  );
+                }
+                return null;
+              })}
+            </div>
+          )
+        }
 
-        {/* You can add LATER, COMPLETED sections too */}
-
-        {/* LATER */}
-        <div className="mb-6">
-          <h3 className="text-sm font-semibold text-gray-300 mb-2 text-left">
-            LATER
-          </h3>
-          <div className="bg-[#52575D] p-4 rounded-lg mb-3">TASK 5 MONGO</div>
-        </div>
-
-        {/* COMPLETED */}
-        <div className="mb-6">
-          <h3 className="text-sm font-semibold text-gray-300 mb-2 text-left">
-            COMPLETED
-          </h3>
-          <div className="bg-[#52575D] p-4 rounded-lg mb-3">TASK 4 MONGO</div>
-        </div>
+        {
+          // COMPLETED TASKS
+          task.some((item) => item.isCompleted === true) && (
+            <div className="mb-6">
+              <h3 className="text-sm font-semibold text-gray-300 mb-2 text-left">
+                COMPLETED
+              </h3>
+              {task.map((item) => {
+                if (item.isCompleted === true) {
+                  return (
+                    <Task
+                      key={item.id}
+                      task={item}
+                      onToggle={handleToggle}
+                      onSelectedTask={handletaskDetails}
+                    />
+                  );
+                }
+                return null;
+              })}
+            </div>
+          )
+        }
       </section>
 
       {/* Task Details */}
-      <section className="relative w-full md:w-8/12 bg-[#CABFAB] p-6 text-[#141414]">
-        <div className="bg-[#DFD8C8] p-4 rounded-lg mb-4 shadow-md">
-          <div className="flex items-center justify-between gap-2">
+      {taskDetails ? (
+        <section className="relative w-full md:w-8/12 bg-[#CABFAB] p-6 text-[#141414]">
+          <div className="bg-[#DFD8C8] p-4 rounded-lg mb-4 shadow-md">
+            <div className="flex items-center justify-between gap-2">
+              <input
+                type="text"
+                value={taskDetails?.task}
+                className="font-semibold text-lg bg-transparent outline-none flex-1"
+                disabled
+              />
+
+              <button
+                type="button"
+                onClick={handleUpdateTask}
+                id={taskDetails?._id}
+                className="text-violet-600 hover:text-violet-800 transition-colors duration-200"
+              >
+                <FontAwesomeIcon icon={faPenToSquare} className="w-5 h-5" />
+              </button>
+
+              <button
+                onClick={handleDeleteTask}
+                className="text-red-600 hover:text-red-800 transition-colors duration-200"
+                id={taskDetails?._id}
+              >
+                <FontAwesomeIcon icon={faTrash} className="w-5 h-5" />
+              </button>
+            </div>
+          </div>
+
+          <div className="bg-[#DFD8C8] p-4 rounded-lg mb-4 shadow-md">
             <input
-              type="text"
-              defaultValue="TASK 1 MONGO"
-              className="font-semibold text-lg bg-transparent outline-none flex-1"
+              type="datetime-local"
+              className="w-full bg-transparent outline-none text-sm"
+              value={
+                taskDetails?.datetime
+                  ? new Date(taskDetails.datetime).toISOString().slice(0, 16)
+                  : ""
+              }
               disabled
             />
-
-            <button
-              type="button"
-              onClick={handleUpdateTask} // Replace with your actual update function
-              className="text-violet-600 hover:text-violet-800 transition-colors duration-200"
-            >
-              <FontAwesomeIcon icon={faPenToSquare} className="w-5 h-5" />
-            </button>
-
-            <button
-              onClick={handleDeleteTask} // Replace with your delete function
-              className="text-red-600 hover:text-red-800 transition-colors duration-200"
-            >
-              <FontAwesomeIcon icon={faTrash} className="w-5 h-5" />
-            </button>
           </div>
-        </div>
 
-        <div className="bg-[#DFD8C8] p-4 rounded-lg mb-4 shadow-md">
-          <input
-            type="datetime-local"
-            className="w-full bg-transparent outline-none text-sm"
-            defaultValue={new Date().toISOString().slice(0, 16)} // Format: "YYYY-MM-DDTHH:MM"
-            disabled
-          />
-        </div>
+          <div className="bg-[#DFD8C8] p-4 rounded-lg shadow-md">
+            <textarea
+              placeholder="📓 Notes"
+              value={taskDetails?.notes || ""}
+              className="w-full h-24 bg-transparent outline-none"
+              disabled
+            />
+          </div>
 
-        <div className="bg-[#DFD8C8] p-4 rounded-lg shadow-md">
-          <textarea
-            placeholder="📓 Notes"
-            className="w-full h-24 bg-transparent outline-none"
-            disabled
-          />
-        </div>
+          {isDeleteModalOpen && (
+            <ModalDelete
+              handleDeleteTask={handleDeleteTask}
+              handleConfirmDelete={handleConfirmDelete}
+              taskDetails={taskDetails}
+            />
+          )}
 
-        <button
-          type="button"
-          onClick={handleAddTask} // Replace with your function
-          className="fixed bottom-6 right-6 z-50 flex items-center justify-center gap-2 w-14 h-14 active:bg-white bg-gray-600 hover:bg-amber-500 text-amber-500 hover:text-white rounded-full shadow-lg transition duration-300"
-        >
-          <FontAwesomeIcon icon={faPlus} className="w-5 h-5" />
-        </button>
-      </section>
+          {isUpdateModalOpen && (
+            <ModalUpdate
+              user={user}
+              getTasks={getTasks}
+              handleUpdateTask={handleUpdateTask}
+            />
+          )}
+        </section>
+      ) : (
+        <section className="relative w-full md:w-8/12 bg-[#CABFAB] p-6 text-[#141414] flex justify-center  items-center">
+          <img src="../../public/DoodleDo.png" alt="" className="h-1/2 w-auto rounded-2xl"/>
+          
+        </section>
+      )}
+
+      <button
+        type="button"
+        onClick={handleAddTask}
+        className="fixed bottom-6 right-6 z-50 flex items-center justify-center gap-2 w-14 h-14 active:bg-white bg-gray-600 hover:bg-amber-500 text-amber-500 hover:text-white rounded-full shadow-lg transition duration-300"
+      >
+        <FontAwesomeIcon icon={faPlus} className="w-5 h-5" />
+      </button>
 
       {isAddModalPressed && (
         <ModalAdd
           getTasks={getTasks}
           handleAddTask={handleAddTask}
           user={user}
-        ></ModalAdd>
-      )}
-
-      {isDeleteModalOpen && (
-        <ModalDelete handleDeleteTask={handleDeleteTask}></ModalDelete>
-      )}
-
-      {isUpdateModalOpen && (
-        <ModalUpdate
-          user={user}
-          getTasks={getTasks}
-          handleUpdateTask={handleUpdateTask}
-        ></ModalUpdate>
+        />
       )}
     </div>
   );

@@ -42,17 +42,8 @@ router.get("/tasks/:userId", verifyFirebaseToken, async (req, res) => {
   }
 });
 
-router.delete("/tasks/:taskid", verifyFirebaseToken, async (req, res) => {
+router.delete("/tasks/:taskId", verifyFirebaseToken, async (req, res) => {
   try {
-    const { userId } = req.params;
-
-    // Optional: make sure token matches the requested userId
-    if (req.user.uid !== userId) {
-      return res
-        .status(403)
-        .json({ message: "Access denied: mismatched user." });
-    }
-
     const { taskId } = req.params;
     const deletedTask = await Task.findByIdAndDelete(taskId);
     if (!deletedTask) {
@@ -68,29 +59,36 @@ router.delete("/tasks/:taskid", verifyFirebaseToken, async (req, res) => {
   }
 });
 
+// UPDATE TASK (including isCompleted)
 router.put("/tasks/:taskId", verifyFirebaseToken, async (req, res) => {
   try {
-    const { userId } = req.params;
-
-    // Optional: make sure token matches the requested userId
-    if (req.user.uid !== userId) {
-      return res
-        .status(403)
-        .json({ message: "Access denied: mismatched user." });
-    }
-
     const { taskId } = req.params;
     const { task, datetime, notes, isCompleted } = req.body;
 
-    const updatedTask = await Task.findByIdAndUpdate(
-      taskId,
-      { task, datetime, notes, isCompleted },
-      { new: true }
-    );
-
-    if (!updatedTask) {
+    // Find task to verify ownership
+    const existingTask = await Task.findById(taskId);
+    if (!existingTask) {
       return res.status(404).json({ message: "Task not found" });
     }
+
+    // Ensure the user updating the task owns it
+    if (existingTask.userId !== req.user.uid) {
+      return res
+        .status(403)
+        .json({ message: "Access denied: You do not own this task." });
+    }
+
+    // Build the update fields dynamically
+    const updatedFields = {};
+    if (task !== undefined) updatedFields.task = task;
+    if (datetime !== undefined) updatedFields.datetime = datetime;
+    if (notes !== undefined) updatedFields.notes = notes;
+    if (isCompleted !== undefined) updatedFields.isCompleted = isCompleted;
+
+    // Update the task
+    const updatedTask = await Task.findByIdAndUpdate(taskId, updatedFields, {
+      new: true,
+    });
 
     res
       .status(200)
@@ -98,7 +96,7 @@ router.put("/tasks/:taskId", verifyFirebaseToken, async (req, res) => {
   } catch (error) {
     res
       .status(500)
-      .json({ message: " Failed to update task", error: error.message });
+      .json({ message: "Failed to update task", error: error.message });
   }
 });
 

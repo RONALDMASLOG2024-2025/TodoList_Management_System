@@ -3,7 +3,7 @@ import axios from "axios";
 
 export default function ModalAdd({ handleAddTask, user, getTasks }) {
   // State to manage input fields
-  const [task, setTask] = useState("TASK 1 MONGO");
+  const [task, setTask] = useState();
   const [datetime, setDatetime] = useState(
     new Date(new Date().getTime() - new Date().getTimezoneOffset() * 60000)
       .toISOString()
@@ -56,6 +56,7 @@ export default function ModalAdd({ handleAddTask, user, getTasks }) {
           <input
             type="text"
             value={task}
+            placeholder="Your task name!"
             onChange={(e) => setTask(e.target.value)}
             className="w-full font-semibold text-lg bg-transparent outline-none text-[#141414]"
           />
