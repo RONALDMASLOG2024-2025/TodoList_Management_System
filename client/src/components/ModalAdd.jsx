@@ -40,6 +40,7 @@ export default function ModalAdd({ handleAddTask, user, getTasks }) {
       await getTasks(user.uid);
       handleAddTask(); // Close modal or reset form
     } catch (error) {
+      console.log("DAOT AND LINE 43 SA ADD MODAL")
       console.error(
         "Error:",
         error.response ? error.response.data : error.message
