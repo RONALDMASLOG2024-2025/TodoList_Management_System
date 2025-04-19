@@ -87,6 +87,7 @@ export default function Todo({ user }) {
         }
       );
       await getTasks(user.uid);
+      setTaskDetails(null)
       setIsUpdateModalOpen(false);
       console.log("Task updated successfully.");
     } catch (error) {
