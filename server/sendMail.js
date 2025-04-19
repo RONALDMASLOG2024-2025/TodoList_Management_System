@@ -40,7 +40,7 @@ const sendReminderEmail = async (toEmail, taskTitle, taskTime) => {
         <p>This is your friendly reminder that <strong>"${taskTitle}"</strong> is scheduled at <strong>${taskTime}</strong>.</p>
         <p style="margin-top: 24px; font-style: italic; color: #555;">"${motivation}"</p>
         <hr/>
-        <p style="font-size: 0.9em; color: #888;">You've got this! – DoodleDo Team 🦤</p>
+        <p style="font-size: 0.9em; color: #888;">You've got this! – DoodleDo Team - Maslog 🦤</p>
       </div>
     `,
   };
