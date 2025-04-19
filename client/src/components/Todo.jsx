@@ -355,7 +355,7 @@ export default function Todo({ user }) {
         </section>
       ) : (
         <section className="relative w-full md:w-8/12 bg-[#CABFAB] p-6 text-[#141414] flex justify-center  items-center">
-          <img src="../../public/DoodleDo.png" alt="" className="h-1/2 w-auto rounded-2xl"/>
+          <img src="/DoodleDo.png" alt="" className="h-1/2 w-auto rounded-2xl"/>
           
         </section>
       )}
