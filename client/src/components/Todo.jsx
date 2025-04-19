@@ -169,7 +169,10 @@ export default function Todo({ user }) {
 
         <h2
           className="text-md text-left font-bold mb-4"
-          onClick={() => getTasks(user.uid)}
+          onClick={() => {
+            getTasks(user.uid);
+            setTaskDetails(null);
+          }}
         >
           My To-dos
         </h2>
