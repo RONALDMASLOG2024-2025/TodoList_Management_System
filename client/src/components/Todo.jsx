@@ -74,13 +74,36 @@ export default function Todo({ user }) {
     setIsDeleteModalOpen(!isDeleteModalOpen);
   };
 
-  const handleUpdateTask = () => {
-    setIsUpdateModalOpen(!isUpdateModalOpen);
+  const handleUpdateTask = async (taskId, updatedData) => {
+    try {
+      const token = await user.getIdToken();
+      await axios.put(
+        `${import.meta.env.VITE_API_URL}/api/tasks/${taskId}`,
+        updatedData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      await getTasks(user.uid);
+      setIsUpdateModalOpen(false);
+      console.log("Task updated successfully.");
+    } catch (error) {
+      console.error(
+        "Error updating task:",
+        error.response?.data || error.message
+      );
+    }
   };
 
   const handleToggle = async (taskId) => {
     // Toggle logic here
     await updateTaskStatus(taskId);
+  };
+
+  const openUpdateModal = () => {
+    setIsUpdateModalOpen(!isUpdateModalOpen);
   };
 
   const updateTaskStatus = async (taskId) => {
@@ -130,7 +153,7 @@ export default function Todo({ user }) {
         }
       );
       getTasks(user.uid);
-      console.log("Task deleted" + taskId);
+
       setTaskDetails(null);
       setIsDeleteModalOpen(!isDeleteModalOpen);
     } catch (error) {
@@ -170,8 +193,8 @@ export default function Todo({ user }) {
         <h2
           className="text-md text-left font-bold mb-4"
           onClick={() => {
-            getTasks(user.uid);
             setTaskDetails(null);
+            getTasks(user.uid);
           }}
         >
           My To-dos
@@ -306,7 +329,7 @@ export default function Todo({ user }) {
 
               <button
                 type="button"
-                onClick={handleUpdateTask}
+                onClick={openUpdateModal}
                 id={taskDetails?._id}
                 className="text-violet-600 hover:text-violet-800 transition-colors duration-200"
               >
@@ -358,6 +381,7 @@ export default function Todo({ user }) {
               user={user}
               getTasks={getTasks}
               handleUpdateTask={handleUpdateTask}
+              taskDetails={taskDetails}
             />
           )}
         </section>
