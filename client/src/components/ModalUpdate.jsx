@@ -1,10 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 
-export default function ModalUpdate({ handleUpdateTask, openUpdateModal, taskDetails }) {
+export default function ModalUpdate({
+  handleUpdateTask,
+  openUpdateModal,
+  taskDetails,
+}) {
   const [updatedTask, setUpdatedTask] = useState({
-    task: '',
-    datetime: '',
-    notes: '',
+    task: "",
+    datetime: "",
+    notes: "",
   });
 
   const [errors, setErrors] = useState({
@@ -13,14 +17,21 @@ export default function ModalUpdate({ handleUpdateTask, openUpdateModal, taskDet
     notes: false,
   });
 
+  function formatDateForInput(value) {
+    const date = new Date(value);
+    const offset = date.getTimezoneOffset(); // in minutes
+    const localDate = new Date(date.getTime() - offset * 60000); // adjust to local
+    return localDate.toISOString().slice(0, 16);
+  }
+
   useEffect(() => {
     if (taskDetails) {
       setUpdatedTask({
-        task: taskDetails.task || '',
+        task: taskDetails.task || "",
         datetime: taskDetails.datetime
-          ? new Date(taskDetails.datetime).toISOString().slice(0, 16)
-          : '',
-        notes: taskDetails.notes || '',
+          ? formatDateForInput(taskDetails.datetime)
+          : "",
+        notes: taskDetails.notes || "",
       });
     }
   }, [taskDetails]);
@@ -33,16 +44,16 @@ export default function ModalUpdate({ handleUpdateTask, openUpdateModal, taskDet
     }));
 
     // Clear error for this field if user starts typing
-    if (value.trim() !== '') {
+    if (value.trim() !== "") {
       setErrors((prev) => ({ ...prev, [name]: false }));
     }
   };
 
   const handleSave = () => {
     const newErrors = {
-      task: updatedTask.task.trim() === '',
-      datetime: updatedTask.datetime.trim() === '',
-      notes: updatedTask.notes.trim() === '',
+      task: updatedTask.task.trim() === "",
+      datetime: updatedTask.datetime.trim() === "",
+      notes: updatedTask.notes.trim() === "",
     };
 
     setErrors(newErrors);
@@ -57,7 +68,11 @@ export default function ModalUpdate({ handleUpdateTask, openUpdateModal, taskDet
     <div className="modal fixed inset-0 bg-black/70 flex items-center justify-center z-50 backdrop-blur-sm">
       <div className="bg-[#CABFAB] w-full max-w-lg rounded-2xl p-6 shadow-2xl space-y-4">
         {/* Title + Input */}
-        <div className={`bg-[#DFD8C8] p-4 rounded-lg shadow-md ${errors.task ? 'border-2 border-red-500' : ''}`}>
+        <div
+          className={`bg-[#DFD8C8] p-4 rounded-lg shadow-md ${
+            errors.task ? "border-2 border-red-500" : ""
+          }`}
+        >
           <input
             type="text"
             name="task"
@@ -69,7 +84,11 @@ export default function ModalUpdate({ handleUpdateTask, openUpdateModal, taskDet
         </div>
 
         {/* DateTime Picker */}
-        <div className={`bg-[#DFD8C8] p-4 rounded-lg shadow-md ${errors.datetime ? 'border-2 border-red-500' : ''}`}>
+        <div
+          className={`bg-[#DFD8C8] p-4 rounded-lg shadow-md ${
+            errors.datetime ? "border-2 border-red-500" : ""
+          }`}
+        >
           <input
             type="datetime-local"
             name="datetime"
@@ -80,7 +99,11 @@ export default function ModalUpdate({ handleUpdateTask, openUpdateModal, taskDet
         </div>
 
         {/* Notes */}
-        <div className={`bg-[#DFD8C8] p-4 rounded-lg shadow-md ${errors.notes ? 'border-2 border-red-500' : ''}`}>
+        <div
+          className={`bg-[#DFD8C8] p-4 rounded-lg shadow-md ${
+            errors.notes ? "border-2 border-red-500" : ""
+          }`}
+        >
           <textarea
             name="notes"
             placeholder="📓 Notes"

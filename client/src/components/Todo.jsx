@@ -22,6 +22,10 @@ export default function Todo({ user }) {
 
   const [task, setTask] = useState([]);
 
+  // Define "today" once at the top (at local midnight)
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
   useEffect(() => {
     if (user) {
       getTasks(user.uid);
@@ -87,7 +91,7 @@ export default function Todo({ user }) {
         }
       );
       await getTasks(user.uid);
-      setTaskDetails(null)
+      setTaskDetails(null);
       setIsUpdateModalOpen(false);
       console.log("Task updated successfully.");
     } catch (error) {
@@ -132,14 +136,18 @@ export default function Todo({ user }) {
     }
   };
 
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-
   const [taskDetails, setTaskDetails] = useState(null); // null initially
 
   const handletaskDetails = (task) => {
     setTaskDetails(task);
   };
+
+  function formatDateForInput(value) {
+    const date = new Date(value);
+    const offset = date.getTimezoneOffset(); // in minutes
+    const localDate = new Date(date.getTime() - offset * 60000); // adjust to local
+    return localDate.toISOString().slice(0, 16);
+  }
 
   const handleConfirmDelete = async (taskId) => {
     try {
@@ -203,10 +211,11 @@ export default function Todo({ user }) {
 
         {
           // OVERDUE TASKS
-          task.some(
-            (item) =>
-              new Date(item.datetime) < today && item.isCompleted === false
-          ) && (
+          task.some((item) => {
+            const taskDate = new Date(item.datetime);
+            taskDate.setHours(0, 0, 0, 0);
+            return taskDate < today && !item.isCompleted;
+          }) && (
             <div className="mb-6">
               <h3 className="text-sm font-semibold text-gray-300 mb-2 text-left">
                 OVERDUE
@@ -214,7 +223,7 @@ export default function Todo({ user }) {
               {task.map((item) => {
                 const taskDate = new Date(item.datetime);
                 taskDate.setHours(0, 0, 0, 0);
-                if (taskDate < today && item.isCompleted === false) {
+                if (taskDate < today && !item.isCompleted) {
                   return (
                     <Task
                       key={item.id}
@@ -232,20 +241,21 @@ export default function Todo({ user }) {
 
         {
           // TODAY TASKS
-          task.some(
-            (item) =>
-              new Date(item.datetime).toDateString() === today.toDateString() &&
-              item.isCompleted === false
-          ) && (
+          task.some((item) => {
+            const taskDate = new Date(item.datetime);
+            taskDate.setHours(0, 0, 0, 0);
+            return taskDate.getTime() === today.getTime() && !item.isCompleted;
+          }) && (
             <div className="mb-6">
               <h3 className="text-sm font-semibold text-gray-300 mb-2 text-left">
                 TODAY
               </h3>
               {task.map((item) => {
                 const taskDate = new Date(item.datetime);
+                taskDate.setHours(0, 0, 0, 0);
                 if (
-                  taskDate.toDateString() === today.toDateString() &&
-                  item.isCompleted === false
+                  taskDate.getTime() === today.getTime() &&
+                  !item.isCompleted
                 ) {
                   return (
                     <Task
@@ -264,10 +274,11 @@ export default function Todo({ user }) {
 
         {
           // LATER TASKS
-          task.some(
-            (item) =>
-              new Date(item.datetime) > today && item.isCompleted === false
-          ) && (
+          task.some((item) => {
+            const taskDate = new Date(item.datetime);
+            taskDate.setHours(0, 0, 0, 0);
+            return taskDate > today && !item.isCompleted;
+          }) && (
             <div className="mb-6">
               <h3 className="text-sm font-semibold text-gray-300 mb-2 text-left">
                 LATER
@@ -275,7 +286,7 @@ export default function Todo({ user }) {
               {task.map((item) => {
                 const taskDate = new Date(item.datetime);
                 taskDate.setHours(0, 0, 0, 0);
-                if (taskDate > today && item.isCompleted === false) {
+                if (taskDate > today && !item.isCompleted) {
                   return (
                     <Task
                       key={item.id}
@@ -293,13 +304,13 @@ export default function Todo({ user }) {
 
         {
           // COMPLETED TASKS
-          task.some((item) => item.isCompleted === true) && (
+          task.some((item) => item.isCompleted) && (
             <div className="mb-6">
               <h3 className="text-sm font-semibold text-gray-300 mb-2 text-left">
                 COMPLETED
               </h3>
               {task.map((item) => {
-                if (item.isCompleted === true) {
+                if (item.isCompleted) {
                   return (
                     <Task
                       key={item.id}
@@ -353,7 +364,7 @@ export default function Todo({ user }) {
               className="w-full bg-transparent outline-none text-sm"
               value={
                 taskDetails?.datetime
-                  ? new Date(taskDetails.datetime).toISOString().slice(0, 16)
+                  ? formatDateForInput(taskDetails.datetime)
                   : ""
               }
               disabled
@@ -382,6 +393,7 @@ export default function Todo({ user }) {
               user={user}
               getTasks={getTasks}
               handleUpdateTask={handleUpdateTask}
+              openUpdateModal={openUpdateModal}
               taskDetails={taskDetails}
             />
           )}
@@ -391,7 +403,7 @@ export default function Todo({ user }) {
           <img
             src="/DoodleDo.png"
             alt=""
-            className="h-1/2 w-auto rounded-2xl"
+            className="h-full w-auto rounded-2xl"
           />
         </section>
       )}
@@ -399,7 +411,7 @@ export default function Todo({ user }) {
       <button
         type="button"
         onClick={handleAddTask}
-        className="fixed bottom-6 right-6 z-50 flex items-center justify-center gap-2 w-14 h-14 active:bg-white bg-gray-600 hover:bg-amber-500 text-amber-500 hover:text-white rounded-full shadow-lg transition duration-300"
+        className="fixed bottom-6 right-6 z-30 flex items-center justify-center gap-2 w-14 h-14 active:bg-white bg-gray-600/80 hover:bg-amber-500/80 text-amber-500 hover:text-white rounded-full shadow-md   shadow-black transition duration-300"
       >
         <FontAwesomeIcon icon={faPlus} className="w-5 h-5" />
       </button>
