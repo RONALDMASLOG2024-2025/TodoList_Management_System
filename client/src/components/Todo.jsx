@@ -167,7 +167,12 @@ export default function Todo({ user }) {
           </button>
         </div>
 
-        <h2 className="text-md text-left font-bold mb-4">My To-dos</h2>
+        <h2
+          className="text-md text-left font-bold mb-4"
+          onClick={() => getTasks(user.uid)}
+        >
+          My To-dos
+        </h2>
 
         {
           // OVERDUE TASKS
@@ -355,8 +360,11 @@ export default function Todo({ user }) {
         </section>
       ) : (
         <section className="relative w-full md:w-8/12 bg-[#CABFAB] p-6 text-[#141414] flex justify-center  items-center">
-          <img src="/DoodleDo.png" alt="" className="h-1/2 w-auto rounded-2xl"/>
-          
+          <img
+            src="/DoodleDo.png"
+            alt=""
+            className="h-1/2 w-auto rounded-2xl"
+          />
         </section>
       )}
 
