@@ -7,7 +7,12 @@ export default function ModalUpdate({ handleUpdateTask, openUpdateModal, taskDet
     notes: '',
   });
 
-  // Sync initial task details into local state when modal opens
+  const [errors, setErrors] = useState({
+    task: false,
+    datetime: false,
+    notes: false,
+  });
+
   useEffect(() => {
     if (taskDetails) {
       setUpdatedTask({
@@ -26,17 +31,33 @@ export default function ModalUpdate({ handleUpdateTask, openUpdateModal, taskDet
       ...prev,
       [name]: value,
     }));
+
+    // Clear error for this field if user starts typing
+    if (value.trim() !== '') {
+      setErrors((prev) => ({ ...prev, [name]: false }));
+    }
   };
 
   const handleSave = () => {
-    handleUpdateTask(taskDetails._id, updatedTask); // Pass ID and updated fields
+    const newErrors = {
+      task: updatedTask.task.trim() === '',
+      datetime: updatedTask.datetime.trim() === '',
+      notes: updatedTask.notes.trim() === '',
+    };
+
+    setErrors(newErrors);
+
+    const hasError = Object.values(newErrors).some((e) => e);
+    if (hasError) return;
+
+    handleUpdateTask(taskDetails._id, updatedTask);
   };
 
   return (
     <div className="modal fixed inset-0 bg-black/70 flex items-center justify-center z-50 backdrop-blur-sm">
       <div className="bg-[#CABFAB] w-full max-w-lg rounded-2xl p-6 shadow-2xl space-y-4">
         {/* Title + Input */}
-        <div className="bg-[#DFD8C8] p-4 rounded-lg shadow-md">
+        <div className={`bg-[#DFD8C8] p-4 rounded-lg shadow-md ${errors.task ? 'border-2 border-red-500' : ''}`}>
           <input
             type="text"
             name="task"
@@ -48,7 +69,7 @@ export default function ModalUpdate({ handleUpdateTask, openUpdateModal, taskDet
         </div>
 
         {/* DateTime Picker */}
-        <div className="bg-[#DFD8C8] p-4 rounded-lg shadow-md">
+        <div className={`bg-[#DFD8C8] p-4 rounded-lg shadow-md ${errors.datetime ? 'border-2 border-red-500' : ''}`}>
           <input
             type="datetime-local"
             name="datetime"
@@ -59,7 +80,7 @@ export default function ModalUpdate({ handleUpdateTask, openUpdateModal, taskDet
         </div>
 
         {/* Notes */}
-        <div className="bg-[#DFD8C8] p-4 rounded-lg shadow-md">
+        <div className={`bg-[#DFD8C8] p-4 rounded-lg shadow-md ${errors.notes ? 'border-2 border-red-500' : ''}`}>
           <textarea
             name="notes"
             placeholder="📓 Notes"

@@ -2,8 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 
 export default function ModalAdd({ handleAddTask, user, getTasks }) {
-  // State to manage input fields
-  const [task, setTask] = useState();
+  const [task, setTask] = useState("");
   const [datetime, setDatetime] = useState(
     new Date(new Date().getTime() - new Date().getTimezoneOffset() * 60000)
       .toISOString()
@@ -12,13 +11,23 @@ export default function ModalAdd({ handleAddTask, user, getTasks }) {
   const [notes, setNotes] = useState("");
   const [isCompleted, setIsCompleted] = useState(false);
 
-  // Function to handle saving the task
+  const [errors, setErrors] = useState({
+    task: false,
+    datetime: false,
+  });
+
   const handleSaveTask = async () => {
+    // Reset errors first
+    setErrors({
+      task: !task.trim(),
+      datetime: !datetime.trim(),
+    });
+
+    // Prevent save if any required field is empty
+    if (!task.trim() || !datetime.trim()) return;
+
     try {
-      // Assuming `idToken` is already retrieved from Firebase
       const idToken = await user.getIdToken();
-      console.log("Firebase ID Token:", idToken);
-      // Make the POST request
       const response = await axios.post(
         `${import.meta.env.VITE_API_URL}/api/tasks`,
         {
@@ -35,12 +44,11 @@ export default function ModalAdd({ handleAddTask, user, getTasks }) {
         }
       );
 
-      // Handle success
       console.log("Task saved:", response.data);
       await getTasks(user.uid);
       handleAddTask(); // Close modal or reset form
     } catch (error) {
-      console.log("DAOT AND LINE 43 SA ADD MODAL")
+      console.log("DAOT AND LINE 43 SA ADD MODAL");
       console.error(
         "Error:",
         error.response ? error.response.data : error.message
@@ -52,22 +60,32 @@ export default function ModalAdd({ handleAddTask, user, getTasks }) {
     <div className="modal fixed inset-0 bg-black/70 backdrop-opacity-100 flex items-center backdrop-blur-xs justify-center z-50">
       <div className="bg-[#CABFAB] w-full max-w-lg rounded-2xl p-6 shadow-2xl space-y-4">
         {/* Title + Input */}
-        <div className="bg-[#DFD8C8] p-4 rounded-lg shadow-md">
+        <div className={`bg-[#DFD8C8] p-4 rounded-lg shadow-md ${errors.task ? "border-2 border-red-500" : ""}`}>
           <input
             type="text"
             value={task}
             placeholder="Your task name!"
-            onChange={(e) => setTask(e.target.value)}
+            onChange={(e) => {
+              setTask(e.target.value);
+              if (errors.task && e.target.value.trim()) {
+                setErrors((prev) => ({ ...prev, task: false }));
+              }
+            }}
             className="w-full font-semibold text-lg bg-transparent outline-none text-[#141414]"
           />
         </div>
 
         {/* DateTime Picker */}
-        <div className="bg-[#DFD8C8] p-4 rounded-lg shadow-md">
+        <div className={`bg-[#DFD8C8] p-4 rounded-lg shadow-md ${errors.datetime ? "border-2 border-red-500" : ""}`}>
           <input
             type="datetime-local"
             value={datetime}
-            onChange={(e) => setDatetime(e.target.value)}
+            onChange={(e) => {
+              setDatetime(e.target.value);
+              if (errors.datetime && e.target.value.trim()) {
+                setErrors((prev) => ({ ...prev, datetime: false }));
+              }
+            }}
             className="w-full bg-transparent outline-none text-sm text-[#141414]"
           />
         </div>
@@ -87,14 +105,14 @@ export default function ModalAdd({ handleAddTask, user, getTasks }) {
           <button
             type="button"
             className="px-4 py-2 rounded-lg bg-gray-600 hover:bg-gray-700 text-white transition"
-            onClick={handleAddTask} // Call the passed function (to handle modal close)
+            onClick={handleAddTask}
           >
             Cancel
           </button>
           <button
             type="button"
             className="px-4 py-2 rounded-lg bg-amber-500 hover:bg-amber-600 text-white font-semibold transition"
-            onClick={handleSaveTask} // Trigger save task functionality
+            onClick={handleSaveTask}
           >
             Save
           </button>
