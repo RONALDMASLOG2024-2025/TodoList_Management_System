@@ -174,15 +174,23 @@ export default function Todo({ user }) {
   };
 
   return (
-    <div className={`flex flex-col md:flex-row h-screen w-screen font-sans ${taskDetails? "" : "p-x-10"} `}>
+    <div
+      className={`flex flex-col md:flex-row h-screen w-screen font-sans ${
+        taskDetails ? "" : "p-x-10"
+      } `}
+    >
       {/* Sidebar - Tasks */}
       <section
         className={`w-full h-full w-full   bg-black
-       p-6 pt-0 text-white overflow-y-auto ${taskDetails&& "md:w-4/12"}`}
+       p-6 pt-0 text-white overflow-y-auto ${taskDetails && "md:w-4/12"}`}
       >
         <div className="header flex items-center justify-between mb-4 pb-2 pt-6 sticky top-0 bg-black z-10">
-          <div className="flex items-center gap-x-2" onClick={()=> setTaskDetails(null)}>
+          <div
+            className="flex items-center gap-x-2"
+            onClick={() => setTaskDetails(null)}
+          >
             <img
+              draggable="false"
               src="/DoodleDo.png"
               alt="User Logo"
               className="h-8 w-8 rounded-sm object-cover"
@@ -403,7 +411,7 @@ export default function Todo({ user }) {
             />
           )}
         </section>
-     ) }
+      )}
 
       <button
         type="button"

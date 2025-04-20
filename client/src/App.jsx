@@ -36,6 +36,7 @@ function App() {
         {!onLogin ? (
           <>
             <img
+            draggable="false"
               src="/transparentLogo.png"
               alt="User Logo"
               className="h-80 w-auto rounded-sm object-cover"

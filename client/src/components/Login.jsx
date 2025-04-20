@@ -34,6 +34,7 @@ function Login() {
           <img
               src="/transparentLogo.png"
               alt="User Logo"
+              draggable="false"
               className="h-80 w-auto rounded-sm object-cover"
             />
            
