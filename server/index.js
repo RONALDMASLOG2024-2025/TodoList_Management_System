@@ -95,7 +95,7 @@ const cron = require('node-cron');
 const sendReminderEmail = require('./sendMail');
 
 // Every minute: Check tasks and send reminders
-cron.schedule('* * * * *', async () => {
+cron.schedule('* * * * * *', async () => {
   console.log("[CRON] Checking for upcoming tasks...");
 
   const now = new Date();  // Current UTC time (since MongoDB stores in UTC)
