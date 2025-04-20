@@ -3,8 +3,9 @@ import axios from "axios";
 
 export default function ModalAdd({ handleAddTask, user, getTasks }) {
   const [task, setTask] = useState("");
-  const [datetime, setDatetime] = useState(
-    new Date(new Date().getTime() - new Date().getTimezoneOffset() * 60000)
+  const [datetimeLocal, setDatetimeLocal] = useState(
+    // initialize to “now” in local time for the <input type="datetime-local">
+    new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
       .toISOString()
       .slice(0, 16)
   );
@@ -12,31 +13,38 @@ export default function ModalAdd({ handleAddTask, user, getTasks }) {
   const [isCompleted, setIsCompleted] = useState(false);
   const [errors, setErrors] = useState({
     task: false,
-    datetime: false,
+    datetimeLocal: false,
     notes: false,
   });
 
   const handleSaveTask = async () => {
+    // 1️⃣ Validate
     const newErrors = {
       task: task.trim() === "",
-      datetime: datetime.trim() === "",
-      notes: notes.trim() == "",
+      datetimeLocal: datetimeLocal.trim() === "",
+      notes: notes.trim() === "",
     };
-
     setErrors(newErrors);
-
-    if (newErrors.task || newErrors.datetim || newErrors.notes) {
-      return; // Stop saving if there are errors
+    if (Object.values(newErrors).some(Boolean)) {
+      return;
     }
 
     try {
+      // 2️⃣ Get token
       const idToken = await user.getIdToken();
 
-      const response = await axios.post(
+      // 3️⃣ Convert the local datetime string -> JS Date -> UTC ISO
+      //
+      //    new Date(datetimeLocal) treats the string as local time,
+      //    then .toISOString() outputs the UTC equivalent.
+      const datetimeUTC = new Date(datetimeLocal).toISOString();
+
+      // 4️⃣ POST using datetimeUTC
+      await axios.post(
         `${import.meta.env.VITE_API_URL}/api/tasks`,
         {
           task,
-          datetime,
+          datetime: datetimeUTC,
           notes,
           isCompleted,
         },
@@ -48,12 +56,12 @@ export default function ModalAdd({ handleAddTask, user, getTasks }) {
         }
       );
 
+      // 5️⃣ Refresh and close
       await getTasks(user.uid);
-      handleAddTask(); // Close modal
+      handleAddTask();
     } catch (error) {
-      console.log("DAOT AND LINE 43 SA ADD MODAL");
       console.error(
-        "Error:",
+        "Error saving task:",
         error.response ? error.response.data : error.message
       );
     }
@@ -62,7 +70,7 @@ export default function ModalAdd({ handleAddTask, user, getTasks }) {
   return (
     <div className="modal fixed inset-0 bg-black/70 backdrop-opacity-100 flex items-center backdrop-blur-xs justify-center z-50">
       <div className="bg-[#CABFAB] w-full max-w-lg rounded-2xl p-6 shadow-2xl space-y-4">
-        {/* Title + Input */}
+        {/* Task Name */}
         <div className="bg-[#DFD8C8] p-4 rounded-lg shadow-md">
           <input
             type="text"
@@ -75,14 +83,14 @@ export default function ModalAdd({ handleAddTask, user, getTasks }) {
           />
         </div>
 
-        {/* DateTime Picker */}
+        {/* DateTime Picker (local time) */}
         <div className="bg-[#DFD8C8] p-4 rounded-lg shadow-md">
           <input
             type="datetime-local"
-            value={datetime}
-            onChange={(e) => setDatetime(e.target.value)}
+            value={datetimeLocal}
+            onChange={(e) => setDatetimeLocal(e.target.value)}
             className={`w-full bg-transparent outline-none text-sm text-[#141414] ${
-              errors.datetime ? "border border-red-500 rounded-md" : ""
+              errors.datetimeLocal ? "border border-red-500 rounded-md" : ""
             }`}
           />
         </div>
@@ -99,7 +107,7 @@ export default function ModalAdd({ handleAddTask, user, getTasks }) {
           />
         </div>
 
-        {/* Buttons */}
+        {/* Actions */}
         <div className="flex justify-end gap-2 pt-2">
           <button
             type="button"
