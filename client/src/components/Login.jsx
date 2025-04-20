@@ -35,7 +35,7 @@ function Login() {
             DoodleDo
           </h1>
           <p className="text-amber-100 text-xl md:text-2xl mb-8">
-            Todo List Management System
+            To-do List Web Application System
           </p>
           <button
             onClick={handleGoogleLogin}
