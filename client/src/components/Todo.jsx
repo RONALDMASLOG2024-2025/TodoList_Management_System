@@ -6,6 +6,11 @@ import {
   faPlus,
   faTrash,
   faPenToSquare,
+  faCropSimple,
+  faCross,
+  faCrosshairs,
+  faCancel,
+  faTimes,
 } from "@fortawesome/free-solid-svg-icons";
 import Task from "./Task";
 import ModalAdd from "./ModalAdd";
@@ -367,6 +372,13 @@ export default function Todo({ user }) {
                 id={taskDetails?._id}
               >
                 <FontAwesomeIcon icon={faTrash} className="w-5 h-5" />
+              </button>
+              <button
+                onClick={()=>setTaskDetails(null)}
+                className="text-black hover:text-red-800 transition-colors duration-200"
+                id={taskDetails?._id}
+              >
+                <FontAwesomeIcon icon={faTimes} className="w-5 h-5" />
               </button>
             </div>
           </div>
