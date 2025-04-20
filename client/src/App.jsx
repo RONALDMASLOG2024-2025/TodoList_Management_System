@@ -39,7 +39,7 @@ function App() {
               DoodleDo
             </h1>
             <p className="text-amber-100 text-xl md:text-2xl mb-6">
-              Todo List Management System
+              To-do List Application
             </p>
             <button
               className="bg-white text-gray-800 font-semibold px-6 py-2 rounded-md shadow hover:bg-gray-200 transition duration-300"
