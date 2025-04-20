@@ -174,14 +174,19 @@ export default function Todo({ user }) {
   };
 
   return (
-    <div className="flex flex-col md:flex-row h-screen w-screen font-sans">
+    <div className={`flex flex-col md:flex-row h-screen w-screen font-sans ${taskDetails? "" : "p-x-10"} `}>
       {/* Sidebar - Tasks */}
       <section
-        className="w-full h-full md:w-4/12  bg-black
-       p-6 pt-0 text-white overflow-y-auto"
+        className={`w-full h-full w-full   bg-black
+       p-6 pt-0 text-white overflow-y-auto ${taskDetails&& "md:w-4/12"}`}
       >
         <div className="header flex items-center justify-between mb-4 pb-2 pt-6 sticky top-0 bg-black z-10">
-          <div>
+          <div className="flex items-center gap-x-2" onClick={()=> setTaskDetails(null)}>
+            <img
+              src="/DoodleDo.png"
+              alt="User Logo"
+              className="h-8 w-8 rounded-sm object-cover"
+            />
             <p className="xl:text-xl md:text-sm font-bold text-amber-200">
               {user.displayName}
             </p>
@@ -328,7 +333,7 @@ export default function Todo({ user }) {
       </section>
 
       {/* Task Details */}
-      {taskDetails ? (
+      {taskDetails && (
         <section className="relative w-full md:w-8/12 bg-[#CABFAB] p-6 text-[#141414]">
           <div className="bg-[#DFD8C8] p-4 rounded-lg mb-4 shadow-md">
             <div className="flex items-center justify-between gap-2">
@@ -398,24 +403,12 @@ export default function Todo({ user }) {
             />
           )}
         </section>
-      ) : (
-
-
-
-
-        <section className="relative h-full w-full md:w-8/12 bg-[#CABFAB] p-6 text-[#141414] flex justify-center  items-center sm:bottom-0">
-        <img
-          src="/DoodleDo.png"
-          alt=""
-          className="h-full w-auto rounded-2xl"
-        />
-      </section>
-      )}
+     ) }
 
       <button
         type="button"
         onClick={handleAddTask}
-        className="fixed bottom-6 right-6 z-30 flex items-center justify-center gap-2 w-14 h-14 active:bg-white bg-gray-600/80 hover:bg-amber-500/80 text-amber-500 hover:text-white rounded-full shadow-md   shadow-black transition duration-300"
+        className="fixed bottom-6 right-6 z-30 flex items-center justify-center gap-2 w-14 h-14 active:bg-white hover:bg-gray-600/80 bg-amber-500/80 text-white rounded-full shadow-md   shadow-black transition duration-300"
       >
         <FontAwesomeIcon icon={faPlus} className="w-5 h-5" />
       </button>

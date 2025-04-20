@@ -31,22 +31,25 @@ function Login() {
     <div className="flex flex-col items-center justify-center min-h-screen bg-black text-center relative">
       {!user ? (
         <>
-          <h1 className="text-5xl md:text-7xl font-bold text-amber-100 drop-shadow-lg mb-4">
-            DoodleDo
-          </h1>
-          <p className="text-amber-100 text-xl md:text-2xl mb-8">
-            To-do List Web Application System
-          </p>
+          <img
+              src="/transparentLogo.png"
+              alt="User Logo"
+              className="h-80 w-auto rounded-sm object-cover"
+            />
+           
+            <p className="text-amber-100/70 text-xl md:text-xl mb-6">
+              To-do List Management System
+            </p>
           <button
             onClick={handleGoogleLogin}
-            className="bg-white text-gray-800 font-semibold px-6 py-2 rounded-md shadow hover:bg-gray-200 transition duration-300 mb-4"
+            className="bg-white/90 text-gray-800 font-semibold px-6 py-2 rounded-md shadow hover:bg-gray-200 transition duration-300 mb-4"
             type="button"
           >
             Continue with Google
           </button>
 
           <div className="absolute bottom-4 text-center text-sm opacity-50">
-            <p className="text-gray-100">Made by Ronald Maslog</p>
+            <p className="text-gray-100">Made by Maslog & Aung</p>
             <p className="text-gray-100">Year 2025</p>
           </div>
         </>
